@@ -4,6 +4,8 @@ import { execFileSync } from "node:child_process";
 import { chmod, lstat, mkdir, open, readFile, realpath, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
+import { createDownloadProgress } from "../download-progress.mjs";
+
 function platformKey() {
   if (process.platform !== "linux") return `${process.platform}-${process.arch}`;
   const glibc = process.report?.getReport()?.header?.glibcVersionRuntime;
@@ -45,7 +47,9 @@ export async function installOfficeCli(projectRoot) {
   if (!response.ok || !response.body) throw new Error(`下载 OfficeCLI 失败：HTTP ${response.status}。`);
   const temporary = path.join(directory, `.officecli-${randomUUID()}.download`);
   let file;
+  let progress;
   try {
+    progress = createDownloadProgress(`OfficeCLI ${manifest.version}`, response.headers.get("content-length"));
     file = await open(temporary, "wx", 0o755);
     const hash = createHash("sha256");
     let size = 0;
@@ -55,7 +59,9 @@ export async function installOfficeCli(projectRoot) {
       if (size > 64 * 1024 * 1024) throw new Error("OfficeCLI 下载文件超过 64 MiB 限制。");
       hash.update(bytes);
       await file.writeFile(bytes);
+      progress.update(bytes.length);
     }
+    progress.finish();
     await file.close();
     file = undefined;
     const actual = hash.digest("hex");
@@ -65,6 +71,7 @@ export async function installOfficeCli(projectRoot) {
     await rename(temporary, binary);
     console.error(`[chatgpt-mcp] OfficeCLI ${manifest.version} 已安装到项目：${binary}`);
   } catch (error) {
+    progress?.abort();
     await file?.close().catch(() => undefined);
     await rm(temporary, { force: true });
     throw error;

@@ -4,6 +4,8 @@ import { execFileSync } from "node:child_process";
 import { chmod, lstat, mkdir, open, readFile, realpath, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
+import { createDownloadProgress } from "../download-progress.mjs";
+
 const installCommand = "pnpm runtime:install";
 
 async function manifestFor(projectRoot) {
@@ -75,9 +77,11 @@ export async function installCloudflared(projectRoot) {
   const extraction = path.join(directory, `.cloudflared-${randomUUID()}.extract`);
   console.error(`[chatgpt-mcp] 下载 cloudflared ${manifest.version}：${url}`);
   let file;
+  let progress;
   try {
     const response = await fetch(url, { signal: AbortSignal.timeout(300_000) });
     if (!response.ok || !response.body) throw new Error(`下载 cloudflared 失败：HTTP ${response.status}。`);
+    progress = createDownloadProgress(`cloudflared ${manifest.version}`, response.headers.get("content-length"));
     file = await open(temporary, "wx", 0o755);
     const hash = createHash("sha256");
     let size = 0;
@@ -87,7 +91,9 @@ export async function installCloudflared(projectRoot) {
       if (size > 64 * 1024 * 1024) throw new Error("cloudflared 下载文件超过 64 MiB 限制。");
       hash.update(bytes);
       await file.writeFile(bytes);
+      progress.update(bytes.length);
     }
+    progress.finish();
     await file.close();
     file = undefined;
     const actual = hash.digest("hex");
@@ -106,6 +112,7 @@ export async function installCloudflared(projectRoot) {
     if (!version.includes(manifest.version)) throw new Error(`cloudflared 版本不符：${version}。`);
     console.error(`[chatgpt-mcp] cloudflared ${manifest.version} 已安装到项目：${binary}`);
   } catch (error) {
+    progress?.abort();
     await file?.close().catch(() => undefined);
     throw error;
   } finally {
