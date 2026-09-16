@@ -1,0 +1,14 @@
+{
+  "version": "2026.9.1",
+  "release": "https://github.com/cloudflare/cloudflared/releases/download/2026.9.1",
+  "assets": {
+    "win32-x64": { "name": "cloudflared-windows-amd64.exe", "sha256": "2837888cc0f5d58f15b6dc478376de90b4d3ba5241c7947455d1e0a0df429712", "format": "binary" },
+    "win32-ia32": { "name": "cloudflared-windows-386.exe", "sha256": "11b6e4b2d306950bd87e7caa4deee8e80a32d71ffee555a96237a76651eeae4c", "format": "binary" },
+    "darwin-x64": { "name": "cloudflared-darwin-amd64.tgz", "sha256": "ff0d3b51d5ff70eceef89d6b32145fee985018a2174596a5dbe405e2766e2ac4", "format": "tgz" },
+    "darwin-arm64": { "name": "cloudflared-darwin-arm64.tgz", "sha256": "c27ab8fd0aa489449e3d201eb02f957ef460a13b613662928b1b23394bf1bcfe", "format": "tgz" },
+    "linux-x64": { "name": "cloudflared-linux-amd64", "sha256": "03f1f25d1cc93b9ad6c60569d44060bc4f17ed97075760ed8cfca4b12dcd68cc", "format": "binary" },
+    "linux-ia32": { "name": "cloudflared-linux-386", "sha256": "5d66134cf7646dc98f33aeee7bcc8b97d8feacd76db279f5903f9585226e0922", "format": "binary" },
+    "linux-arm": { "name": "cloudflared-linux-arm", "sha256": "093ffa3638ab2b636de63c43a8c68f96a69cf71f9699dd8277e91b160b0f4fc0", "format": "binary" },
+    "linux-arm64": { "name": "cloudflared-linux-arm64", "sha256": "3d97437c71848bd8df68041e12436b484a661d95073ea1937f01a845ce88faa3", "format": "binary" }
+  }
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.local-tools/
+.env
+/config*.json
+!/config.example.json
+mcp.json
+logs/
+.chatgpt-mcp-trash/
+.chatgpt-mcp/

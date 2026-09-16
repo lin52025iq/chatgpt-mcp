@@ -1,0 +1,15 @@
+{
+  "$schema": "./schema/config.schema.json",
+  "workspaceGrants": [],
+  "fileWritesEnabled": true,
+  "plugins": {
+    "officecli": { "enabled": false }
+  },
+  "mcpServers": {
+    "xxx-mcp": {
+      "command": "node",
+      "args": ["C:\\absolute\\path\\to\\xxx-mcp\\dist\\index.js"],
+      "toolAllowlist": []
+    }
+  }
+}

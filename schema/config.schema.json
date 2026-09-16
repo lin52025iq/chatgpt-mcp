@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "chatgpt-mcp 项目配置",
+  "description": "项目根目录 config.json 的字段说明与编辑器校验规则。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["workspaceGrants", "fileWritesEnabled"],
+  "properties": {
+    "$schema": {
+      "const": "./schema/config.schema.json",
+      "description": "本地 JSON Schema 路径，用于编辑器的属性提示与校验。"
+    },
+    "workspaceGrants": {
+      "type": "array",
+      "description": "授权工作区的绝对路径数组；空数组表示仅授权项目根目录下的 workspace。",
+      "items": { "type": "string", "minLength": 1, "description": "一个授权工作区的绝对目录路径。" }
+    },
+    "fileWritesEnabled": {
+      "type": "boolean",
+      "description": "是否注册目录和文件的创建、修改、删除工具。"
+    },
+    "plugins": {
+      "type": "object",
+      "description": "项目内管理的可选能力；仅 enabled=true 的插件由 plugins:install 安装并在运行时暴露工具。",
+      "additionalProperties": false,
+      "properties": {
+        "officecli": {
+          "type": "object",
+          "description": "项目内管理的 OfficeCLI 插件，用于提供 Office 文档查看、编辑、模板创建、数据导入、媒体提取与截图能力。",
+          "additionalProperties": false,
+          "required": ["enabled"],
+          "properties": {
+            "enabled": { "type": "boolean", "description": "启用项目内 OfficeCLI 能力。" }
+          }
+        }
+      }
+    },
+    "mcpServers": {
+      "type": "object",
+      "description": "本机 stdio MCP 服务定义；省略或写为空对象时不接入外部 MCP。服务名称只能使用小写字母、数字和连字符。",
+      "propertyNames": { "pattern": "^[a-z0-9-]+$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command"],
+        "properties": {
+          "command": { "type": "string", "minLength": 1, "description": "启动 stdio MCP 的本机命令。" },
+          "args": { "type": "array", "description": "传给命令的参数；默认空数组。", "items": { "type": "string" } },
+          "env": { "type": "object", "description": "仅传给对应 MCP 子进程的环境变量。", "additionalProperties": { "type": "string" } },
+          "toolAllowlist": { "type": "array", "description": "进一步缩小可转发工具范围的白名单。", "items": { "type": "string", "minLength": 1 } },
+          "workspacePathArguments": { "type": "array", "description": "调用时必须是授权工作区绝对目录的工具参数名。", "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "allowNonLoopback": {
+      "type": "boolean",
+      "description": "允许 HOST 监听非回环地址；默认 false。"
+    },
+    "allowedHosts": {
+      "type": "array",
+      "description": "额外允许的 HTTP Host 值；默认已包含本地监听地址和 CLOUDFLARE_MCP_URL 的主机名。",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

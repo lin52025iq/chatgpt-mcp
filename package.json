@@ -1,0 +1,29 @@
+{
+  "name": "chatgpt-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "供远程 ChatGPT 调用的本地 MCP 服务",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "devEngines": {
+    "runtime": { "name": "node", "version": ">=24", "onFail": "error" },
+    "packageManager": { "name": "pnpm", "version": ">=11", "onFail": "download" }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "runtime:install": "node scripts/install-runtime.mjs",
+    "plugins:install": "node scripts/install-plugins.mjs",
+    "setup": "pnpm runtime:install && pnpm plugins:install",
+    "start": "node --env-file=.env scripts/start.mjs",
+    "start:mcp": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "26.2.0",
+    "typescript": "7.0.2"
+  }
+}
